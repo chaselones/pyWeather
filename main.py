@@ -2,12 +2,19 @@ import requests
 import tkinter as tk
 from tkinter import messagebox
 
+# Constants
+API_KEY = '4844e3db24769244c29ce5f1a377b81e'
+API_URL = "http://api.openweathermap.org/data/2.5/weather"
+
+# Function to get weather data from the API
 def get_weather(city, api_key):
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+    url = f"{API_URL}?q={city}&appid={api_key}&units=metric"
     response = requests.get(url)
-    print(f"URL: {url}")  # Debugging: Print the request URL
-    print(f"Response Code: {response.status_code}")  # Debugging: Print the response status code
-    print(f"Response Body: {response.text}")  # Debugging: Print the response body
+    
+    # Debugging: Print the request URL, response status code, and response body
+    print(f"URL: {url}")
+    print(f"Response Code: {response.status_code}")
+    print(f"Response Body: {response.text}")
     
     if response.status_code == 200:
         return response.json()
@@ -18,6 +25,7 @@ def get_weather(city, api_key):
         messagebox.showerror("Error", f"API error: {response.status_code}")
         return None
 
+# Function to parse the weather data
 def parse_weather_data(data):
     weather = {
         'city': data['name'],
@@ -27,9 +35,10 @@ def parse_weather_data(data):
     }
     return weather
 
+# Function to show weather information in the GUI
 def show_weather():
     city = city_entry.get()
-    weather_data = get_weather(city, api_key)
+    weather_data = get_weather(city, API_KEY)
     if weather_data:
         parsed_data = parse_weather_data(weather_data)
         weather_info = (
@@ -40,17 +49,15 @@ def show_weather():
         )
         messagebox.showinfo("Weather", weather_info)
 
-# Your API key
-api_key = '4844e3db24769244c29ce5f1a377b81e'
-
 # Set up the GUI
 root = tk.Tk()
 root.title("Weather Dashboard")
 
+# GUI Components
 tk.Label(root, text="Enter city:").grid(row=0)
 city_entry = tk.Entry(root)
 city_entry.grid(row=0, column=1)
-
 tk.Button(root, text="Get Weather", command=show_weather).grid(row=1, columnspan=2)
 
+# Start the GUI event loop
 root.mainloop()
